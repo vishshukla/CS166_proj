@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Scanner; // for reading in input
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -28,6 +29,8 @@ import java.io.InputStreamReader;
  *
  */
 public class DBProject {
+
+
 
    // reference to physical database connection.
    private Connection _connection = null;
@@ -91,38 +94,13 @@ public class DBProject {
     * @return the number of rows returned
     * @throws java.sql.SQLException when failed to execute the query
     */
-   public int executeQuery (String query) throws SQLException {
+   public ResultSet executeQuery (String query) throws SQLException {
       // creates a statement object
       Statement stmt = this._connection.createStatement ();
 
       // issues the query instruction
       ResultSet rs = stmt.executeQuery (query);
-
-      /*
-       ** obtains the metadata object for the returned result set.  The metadata
-       ** contains row and column info.
-       */
-      ResultSetMetaData rsmd = rs.getMetaData ();
-      int numCol = rsmd.getColumnCount ();
-      int rowCount = 0;
-
-      // iterates through the result set and output them to standard out.
-      boolean outputHeader = true;
-      while (rs.next()){
-	 if(outputHeader){
-	    for(int i = 1; i <= numCol; i++){
-		System.out.print(rsmd.getColumnName(i) + "\t");
-	    }
-	    System.out.println();
-	    outputHeader = false;
-	 }
-         for (int i=1; i<=numCol; ++i)
-            System.out.print (rs.getString (i) + "\t");
-         System.out.println ();
-         ++rowCount;
-      }//end while
-      stmt.close ();
-      return rowCount;
+      return rs;
    }//end executeQuery
 
    /**
@@ -255,16 +233,71 @@ public class DBProject {
    
    public static void addCustomer(DBProject esql){
 	  // Given customer details add the customer in the DB 
-      // Your code goes here.
-      // ...
-      // ...
+
+      try {
+         String maxFind = "SELECT MAX(CustomerID) FROM CUSTOMER";
+         ResultSet customerID = esql.executeQuery(maxFind);
+
+         int nextID = 0;
+         if(customerID.next()) {
+            nextID = customerID.getInt(1) + 1;
+         }
+
+         System.out.println("ID:" + nextID);
+
+         System.out.println("Enter first name:");
+         String fname = in.readLine();
+         System.out.println("Enter last name:");
+         String lname = in.readLine();
+
+         System.out.println("Enter address:");
+         String address = in.readLine();
+
+         System.out.println("Enter phone number:");
+         String phNo = in.readLine();
+
+         System.out.println("Enter DOB:");
+         String dob = in.readLine();
+
+         System.out.println("Enter gender:");
+         String gender = in.readLine();
+         
+         String q = String.format("INSERT INTO CUSTOMER (customerID, fName, lName, Address, phNo, DOB, gender) VALUES('%1$s','%2$s','%3$s','%4$s','%5$s','%6$s','%7$s');",nextID,fname,lname,address,phNo,dob,gender);
+
+         System.out.println(q);
+
+         esql.executeUpdate(q);
+         // Success Msg
+         System.out.printf("Success. CustomerID: %s", nextID);
+
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
    }//end addCustomer
 
    public static void addRoom(DBProject esql){
 	  // Given room details add the room in the DB
       // Your code goes here.
-      // ...
-      // ...
+        try {
+         System.out.println("Enter hotelID:");
+         String fname = in.readLine();
+         System.out.println("Enter roomNo:");
+         String lname = in.readLine();
+
+         System.out.println("Enter roomType:");
+         String roomType = in.readLine();;
+         
+         String q = String.format("INSERT INTO ROOM (hotelID, roomNo, roomType) VALUES(%1$s,%2$s,%3$s,%4$s,%5$s,%6$s)",customerID,fname,lname,address,phNo,dob);
+
+         esql.executeUpdate(q);
+         // Success Msg
+         System.out.printf("Success. CustomerID: %s", customerID);
+
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
+
+
    }//end addRoom
 
    public static void addMaintenanceCompany(DBProject esql){
