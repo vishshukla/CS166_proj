@@ -103,7 +103,7 @@ public class DBProject {
       return rs;
    }//end executeQuery
 
-   public ResultSet executeQuery (String query) throws SQLException {
+   public int executeQuery (String query) throws SQLException {
       // creates a statement object
       Statement stmt = this._connection.createStatement ();
 
@@ -276,8 +276,6 @@ public class DBProject {
             nextID = customerID.getInt(1) + 1;
          }
 
-         System.out.println("ID:" + nextID);
-
          System.out.println("Enter first name:");
          String fname = in.readLine();
          System.out.println("Enter last name:");
@@ -319,7 +317,39 @@ public class DBProject {
          System.out.println("Enter roomType:");
          String roomType = in.readLine();;
          
-         String q = String.format("INSERT INTO ROOM (hotelID, roomNo, roomType) VALUES(%1$s,%2$s,%3$s)",hotelID, roomNo, roomType);
+         String q = String.format("INSERT INTO ROOM (hotelID, roomNo, roomType) VALUES('%1$s','%2$s','%3$s');",hotelID, roomNo, roomType);
+
+         esql.executeUpdate(q);
+         // Success Msg
+         System.out.println(q);
+         System.out.printf("Success.");
+
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
+   }//end addRoom
+
+   public static void addMaintenanceCompany(DBProject esql){
+      // Given maintenance Company details add the maintenance company in the DB
+      try {
+         String maxFind = "SELECT MAX(cmpID) FROM MaintenanceCompany";
+         ResultSet cmpID = esql.executeQueryGetID(maxFind);
+
+         int nextID = 0;
+         if(cmpID.next()) {
+            nextID = cmpID.getInt(1) + 1;
+         }
+
+         System.out.println(nextID);
+
+         System.out.println("Enter Maintenance Company name:");
+         String name = in.readLine();
+         System.out.println("Enter address:");
+         String address = in.readLine();
+         System.out.println("Is the maintenance company certified?");
+         String certified = in.readLine();
+         
+         String q = String.format("INSERT INTO MaintenanceCompany (cmpID, name, address, isCertified) VALUES('%1$s','%2$s','%3$s','%4$s');",nextID,name,address,certified);
 
          esql.executeUpdate(q);
          // Success Msg
@@ -328,42 +358,161 @@ public class DBProject {
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
-
-
-   }//end addRoom
-
-   public static void addMaintenanceCompany(DBProject esql){
-      // Given maintenance Company details add the maintenance company in the DB
-      // ...
-      // ...
    }//end addMaintenanceCompany
 
    public static void addRepair(DBProject esql){
 	  // Given repair details add repair in the DB
       // Your code goes here.
-      // ...
-      // ...
+      try {
+         String maxFind = "SELECT MAX(rID) FROM Repair";
+         ResultSet rID = esql.executeQueryGetID(maxFind);
+
+         int nextID = 0;
+         if(rID.next()) {
+            nextID = rID.getInt(1) + 1;
+         }
+
+         System.out.println(nextID);
+
+         System.out.println("Enter HotelID:");
+         String hotelID = in.readLine();
+         System.out.println("Enter RoomNo:");
+         String roomNo = in.readLine();
+         System.out.println("Enter Maintenance Company ID:");
+         String mCompany = in.readLine();
+
+         System.out.println("Enter repairDate:");
+         String repairDate = in.readLine();
+         System.out.println("Enter description:");
+         String description = in.readLine();
+         System.out.println("Enter repairType:");
+         String repairType = in.readLine();
+         
+         String q = String.format("INSERT INTO Repair (rID, hotelID, roomNo, mCompany, repairDate, description, repairType) VALUES('%1$s','%2$s','%3$s','%4$s', '%5$s', '%6$s', '%7$s');",nextID,hotelID,roomNo,mCompany,repairDate,description,repairType);
+
+         // For testing
+         System.out.println(q);
+         esql.executeUpdate(q);
+         // Success Msg
+         System.out.printf("Success.");
+
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
    }//end addRepair
 
    public static void bookRoom(DBProject esql){
 	  // Given hotelID, roomNo and customer Name create a booking in the DB 
       // Your code goes here.
-      // ...
-      // ...
+      try {
+         String maxFind = "SELECT MAX(bID) FROM Booking";
+         ResultSet bID = esql.executeQueryGetID(maxFind);
+
+         int nextID = 0;
+         if(bID.next()) {
+            nextID = bID.getInt(1) + 1;
+         }
+
+         System.out.println(nextID);
+
+         System.out.println("Enter Customer ID:");
+         String customer = in.readLine();
+         System.out.println("Enter hotel ID:");
+         String hotelID = in.readLine();
+         System.out.println("Enter RoomNo to book:");
+         String roomNo = in.readLine();
+         System.out.println("Enter booking date:");
+         String bookingDate = in.readLine();
+         System.out.println("Enter number of people:");
+         String noOfPeople = in.readLine();
+         System.out.println("Enter price:");
+         String price = in.readLine();
+         
+         String q = String.format("INSERT INTO Booking (bID, customer, hotelID, roomNo, bookingDate, noOfPeople, price) VALUES('%1$s','%2$s','%3$s','%4$s', '%5$s', '%6$s', '%7$s');",nextID,customer,hotelID,roomNo,bookingDate,noOfPeople,price);
+
+         // For testing
+         System.out.println(q);
+         esql.executeUpdate(q);
+         // Success Msg
+         System.out.printf("Success.");
+
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
    }//end bookRoom
 
    public static void assignHouseCleaningToRoom(DBProject esql){
 	  // Given Staff SSN, HotelID, roomNo Assign the staff to the room 
       // Your code goes here.
-      // ...
-      // ...
+      try {
+         String maxFind = "SELECT MAX(asgID) FROM Assigned";
+         ResultSet asgID = esql.executeQueryGetID(maxFind);
+
+         int nextID = 0;
+         if(asgID.next()) {
+            nextID = asgID.getInt(1) + 1;
+         }
+
+         System.out.println(nextID);
+
+         System.out.println("Enter staff ID:");
+         String staffID = in.readLine();
+         System.out.println("Enter hotel ID:");
+         String hotelID = in.readLine();
+         System.out.println("Enter RoomNo to assign:");
+         String roomNo = in.readLine();
+         
+         String q = String.format("INSERT INTO Assigned (asgID, staffID, hotelID, roomNo) VALUES('%1$s','%2$s','%3$s','%4$s');",nextID,staffID,hotelID,roomNo);
+
+         // For testing
+         System.out.println(q);
+         esql.executeUpdate(q);
+         // Success Msg
+         System.out.printf("Success.");
+
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
    }//end assignHouseCleaningToRoom
    
    public static void repairRequest(DBProject esql){
 	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
       // Your code goes here.
-      // ...
-      // ...
+      try {
+         String maxFind = "SELECT MAX(reqID) FROM Request";
+         ResultSet reqID = esql.executeQueryGetID(maxFind);
+
+         int nextID = 0;
+         if(reqID.next()) {
+            nextID = reqID.getInt(1) + 1;
+         }
+
+         System.out.println(nextID);
+
+         System.out.println("Enter hotel ID:");
+         String hotelID = in.readLine();
+         System.out.println("Enter staff ID:");
+         String staffID = in.readLine();
+         System.out.println("Enter room No:");
+         String roomNo = in.readLine();
+         System.out.println("Enter repair ID:");
+         String repairID = in.readLine();
+         System.out.println("Enter request date:");
+         String requestDate = in.readLine();
+         System.out.println("Enter a description:");
+         String description = in.readLine();
+         // CHECK IF SSN = HOTEL MANAGER
+
+         String q = String.format("INSERT INTO Request (reqID, managerID, repairID,requestDate,description) VALUES('%1$s','%2$s','%3$s','%4$s','%5$s');",nextID,staffID,repairID,requestDate,description);
+         // For testing
+         System.out.println(q);
+         esql.executeUpdate(q);
+         // Success Msg
+         System.out.printf("Success.");
+
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
    }//end repairRequest
    
    public static void numberOfAvailableRooms(DBProject esql){
