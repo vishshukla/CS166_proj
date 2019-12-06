@@ -94,7 +94,7 @@ public class DBProject {
     * @return the number of rows returned
     * @throws java.sql.SQLException when failed to execute the query
     */
-   public ResultSet executeQuery (String query) throws SQLException {
+   public ResultSet executeQueryGetID (String query) throws SQLException {
       // creates a statement object
       Statement stmt = this._connection.createStatement ();
 
@@ -102,6 +102,39 @@ public class DBProject {
       ResultSet rs = stmt.executeQuery (query);
       return rs;
    }//end executeQuery
+
+   public ResultSet executeQuery (String query) throws SQLException {
+      // creates a statement object
+      Statement stmt = this._connection.createStatement ();
+
+      // issues the query instruction
+      ResultSet rs = stmt.executeQuery (query);
+      /*
+       ** obtains the metadata object for the returned result set.  The metadata
+       ** contains row and column info.
+       */
+      ResultSetMetaData rsmd = rs.getMetaData ();
+      int numCol = rsmd.getColumnCount ();
+      int rowCount = 0;
+
+      // iterates through the result set and output them to standard out.
+      boolean outputHeader = true;
+      while (rs.next()){
+    if(outputHeader){
+       for(int i = 1; i <= numCol; i++){
+      System.out.print(rsmd.getColumnName(i) + "\t");
+       }
+       System.out.println();
+       outputHeader = false;
+    }
+         for (int i=1; i<=numCol; ++i)
+            System.out.print (rs.getString (i) + "\t");
+         System.out.println ();
+         ++rowCount;
+      }//end while
+      stmt.close ();
+      return rowCount;
+   }
 
    /**
     * Method to close the physical connection if it is open.
@@ -236,7 +269,7 @@ public class DBProject {
 
       try {
          String maxFind = "SELECT MAX(CustomerID) FROM CUSTOMER";
-         ResultSet customerID = esql.executeQuery(maxFind);
+         ResultSet customerID = esql.executeQueryGetID(maxFind);
 
          int nextID = 0;
          if(customerID.next()) {
@@ -280,18 +313,17 @@ public class DBProject {
       // Your code goes here.
         try {
          System.out.println("Enter hotelID:");
-         String fname = in.readLine();
+         String hotelID = in.readLine();
          System.out.println("Enter roomNo:");
-         String lname = in.readLine();
-
+         String roomNo = in.readLine();
          System.out.println("Enter roomType:");
          String roomType = in.readLine();;
          
-         String q = String.format("INSERT INTO ROOM (hotelID, roomNo, roomType) VALUES(%1$s,%2$s,%3$s,%4$s,%5$s,%6$s)",customerID,fname,lname,address,phNo,dob);
+         String q = String.format("INSERT INTO ROOM (hotelID, roomNo, roomType) VALUES(%1$s,%2$s,%3$s)",hotelID, roomNo, roomType);
 
          esql.executeUpdate(q);
          // Success Msg
-         System.out.printf("Success. CustomerID: %s", customerID);
+         System.out.printf("Success.");
 
       } catch (Exception e) {
          System.err.println(e.getMessage());
