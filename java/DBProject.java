@@ -628,10 +628,11 @@ public class DBProject {
 
          String q = "SELECT B.roomNo, B.bookingDate FROM Booking B WHERE B.HotelID = ";
          q += hid;
-         q += " AND B.bookingDate >= ";
+         q += " AND B.bookingDate BETWEEN TO_DATE(\' ";
          q += date;
-         q += " AND B.bookingDate < ";
-         q += date + 7;
+         q += " \', 'YYYYMMDD') AND TO_DATE(\' ";
+         q += date;
+         q += " \', 'YYYYMMDD') + 7";
 
          esql.executeQuery2(q);
 
@@ -657,11 +658,11 @@ public class DBProject {
          checkEmpty("Rooms to return", rmno);
          checkAlpha("Rooms to return", rmno);
 
-         String q = "SELECT R.roomType, B.price FROM Booking B, Room R WHERE B.roomNo = R.roomNo AND B.bookingDate >  ";
+         String q = "SELECT R.roomType, B.price FROM Booking B, Room R WHERE B.roomNo = R.roomNo AND B.bookingDate BETWEEN TO_DATE(\' ";
          q += ds;
-         q += " AND B.bookingDate < ";
+         q += "\','YYYYMMDD') AND TO_DATE(\' ";
          q += de;
-         q += " ORDER BY B.price DESC LIMIT ";
+         q += "\','YYYYMMDD') ORDER BY B.price DESC LIMIT ";
          q += rmno;
          esql.executeQuery(q);
       } catch (Exception e) {
@@ -735,10 +736,11 @@ public class DBProject {
          q += cfn;
          q += "\" AND C.lname = \"";
          q += cln;
-         q += "\" AND B.bookingDate > \"";
+         q += "\" AND B.bookingDate BETWEEN TO_DATE(\' ";
          q += ds;
-         q += "\" AND B.bookingDate < \"";
+         q += "\','YYYYMMDD') AND TO_DATE(\' ";
          q += de;
+         q += "\','YYYYMMDD') ";
 
          esql.executeQuery(q);
       } catch (Exception e) {
@@ -781,7 +783,27 @@ public class DBProject {
    
    public static void numberOfRepairsForEachRoomPerYear(DBProject esql){
 	  // Given a hotelID, roomNo, get the count of repairs per year
+      try {
+         System.out.println("Enter Hotel ID:");
+         String hid = in.readLine();
+         checkEmpty("Number", hid);
+         checkAlpha("Number", hid);
 
+         System.out.println("Enter Room No:");
+         String rmno = in.readLine();
+         checkEmpty("Number", rmno);
+         checkAlpha("Number", rmno);
+
+         String q = String.format("SELECT R.roomNo, Count(R.repairType) FROM Repair R WHERE R.roomNo = ";
+         q += rmno;
+         q += " AND R.hotelID = ";
+         q += hid;
+         q += " GROUP BY (YEAR(R.repairDate)); ";
+
+         esql.executeQuery2(q);
+      } catch (Exception e) {
+         System.err.println(e.getMessage());
+      }
    }//end listRepairsMade
 
 }//end DBProject
