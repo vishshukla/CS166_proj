@@ -437,7 +437,6 @@ public class DBProject {
 
    public static void bookRoom(DBProject esql){
 	  // Given hotelID, roomNo and customer Name create a booking in the DB 
-      // Your code goes here.
       try {
          String maxFind = "SELECT MAX(bID) FROM Booking";
          ResultSet bID = esql.executeQuery(maxFind);
@@ -478,12 +477,7 @@ public class DBProject {
          
          String q = String.format("INSERT INTO Booking (bID, customer, hotelID, roomNo, bookingDate, noOfPeople, price) VALUES('%1$s','%2$s','%3$s','%4$s', '%5$s', '%6$s', '%7$s');",nextID,customer,hotelID,roomNo,bookingDate,noOfPeople,price);
 
-         // For testing
-         System.out.println(q);
          esql.executeUpdate(q);
-         // Success Msg
-         System.out.printf("Success.");
-
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -491,7 +485,6 @@ public class DBProject {
 
    public static void assignHouseCleaningToRoom(DBProject esql){
 	  // Given Staff SSN, HotelID, roomNo Assign the staff to the room 
-      // Your code goes here.
       try {
          String maxFind = "SELECT MAX(asgID) FROM Assigned";
          ResultSet asgID = esql.executeQuery(maxFind);
@@ -528,7 +521,6 @@ public class DBProject {
    
    public static void repairRequest(DBProject esql){
 	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
-      // Your code goes here.
       try {
          String maxFind = "SELECT MAX(reqID) FROM Request";
          ResultSet reqID = esql.executeQuery(maxFind);
@@ -597,18 +589,16 @@ public class DBProject {
    
    public static void numberOfBookedRooms(DBProject esql){
 	  // Given a hotelID, get the count of rooms booked
-      // Your code goes here.
       try {
          System.out.println("Enter hotelID:");
          String hid = in.readLine();
          checkEmpty("Hotel ID", hid);
          checkAlpha("Hotel ID", hid);
-
+         
          String q = "SELECT Count(*) FROM Booking B WHERE B.HotelID = ";
          q += hid + ";";
 
          esql.executeQuery2(q);
-
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -625,17 +615,17 @@ public class DBProject {
          System.out.println("Enter Date (in MM/DD/YYYY):");
          String date = in.readLine();
          checkDate("Date", date);
+         date = date.replace("/","");
 
          String q = "SELECT B.roomNo, B.bookingDate FROM Booking B WHERE B.HotelID = ";
          q += hid;
          q += " AND B.bookingDate BETWEEN TO_DATE(\' ";
          q += date;
-         q += " \', 'YYYYMMDD') AND TO_DATE(\' ";
+         q += " \', 'MMDDYYYY') AND TO_DATE(\' ";
          q += date;
-         q += " \', 'YYYYMMDD') + 7";
+         q += " \', 'MMDDYYYY') + 7";
 
          esql.executeQuery2(q);
-
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -643,28 +633,29 @@ public class DBProject {
    
    public static void topKHighestRoomPriceForADateRange(DBProject esql){
 	  // List Top K Rooms with the highest price for a given date range
-      // Your code goes here.
       try {
          System.out.println("Enter Starting Date:");
          String ds = in.readLine();
          checkDate("Start date",ds);
+         ds = ds.replace("/","");
 
          System.out.println("Enter Ending Date:");
          String de = in.readLine();
          checkDate("End date",de);
+         de = de.replace("/","");
          
          System.out.println("Enter number of rooms to return:");
          String rmno = in.readLine();
          checkEmpty("Rooms to return", rmno);
          checkAlpha("Rooms to return", rmno);
 
-         String q = "SELECT R.roomType, B.price FROM Booking B, Room R WHERE B.roomNo = R.roomNo AND B.bookingDate BETWEEN TO_DATE(\' ";
+         String q = "SELECT DISTINCT B.hotelID, R.roomNo, R.roomType, B.price FROM Booking B, Room R WHERE B.roomNo = R.roomNo AND B.bookingDate BETWEEN TO_DATE(\' ";
          q += ds;
-         q += "\','YYYYMMDD') AND TO_DATE(\' ";
+         q += "\','MMDDYYYY') AND TO_DATE(\' ";
          q += de;
-         q += "\','YYYYMMDD') ORDER BY B.price DESC LIMIT ";
+         q += "\','MMDDYYYY') ORDER BY B.price DESC LIMIT ";
          q += rmno;
-         esql.executeQuery(q);
+         esql.executeQuery2(q);
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -704,7 +695,6 @@ public class DBProject {
    
    public static void totalCostForCustomer(DBProject esql){
 	  // Given a hotelID, customer Name and date range get the total cost incurred by the customer
-      // Your code goes here.
       try {
          System.out.println("Enter Hotel ID:");
          String hid = in.readLine();
@@ -721,28 +711,29 @@ public class DBProject {
          checkEmpty("Customer Last Name", cln);
          checkDigit("Customer Last Name", cln);
 
-
          System.out.println("Enter starting date:");
          String ds = in.readLine();
          checkDate("Starting Date", ds);
+         ds = ds.replace("/","");
 
          System.out.println("Enter ending date:");
          String de = in.readLine();
          checkDate("Ending Date", de);
+         de = de.replace("/","");
 
-         String q = "SELECT SUM(B.price) FROM Booking B Customer C WHERE B.hotelID = \"";
+         String q = "SELECT SUM(B.price) FROM Booking B, Customer C WHERE B.hotelID = \'";
          q += hid;
-         q += "\" AND B.customer = C.customerID AND C.fname = \"";
+         q += "\' AND B.customer = C.customerID AND C.fname = \'";
          q += cfn;
-         q += "\" AND C.lname = \"";
+         q += "\' AND C.lname = \'";
          q += cln;
-         q += "\" AND B.bookingDate BETWEEN TO_DATE(\' ";
+         q += "\' AND B.bookingDate BETWEEN TO_DATE(\'";
          q += ds;
-         q += "\','YYYYMMDD') AND TO_DATE(\' ";
+         q += "\','MMDDYYYY') AND TO_DATE(\' ";
          q += de;
-         q += "\','YYYYMMDD') ";
+         q += "\','MMDDYYYY') ";
 
-         esql.executeQuery(q);
+         esql.executeQuery2(q);
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -766,7 +757,6 @@ public class DBProject {
    
    public static void topKMaintenanceCompany(DBProject esql){
 	  // List Top K Maintenance Company Names based on total repair count (descending order)
-      // Your code goes here.
       try {
          System.out.println("Enter Number of Maintainance Companies to return:");
          String mn = in.readLine();
@@ -794,11 +784,11 @@ public class DBProject {
          checkEmpty("Number", rmno);
          checkAlpha("Number", rmno);
 
-         String q = String.format("SELECT R.roomNo, Count(R.repairType) FROM Repair R WHERE R.roomNo = ";
+         String q = "SELECT EXTRACT (YEAR FROM R.repairDate), Count(R.repairType) FROM Repair R WHERE R.roomNo = ";
          q += rmno;
          q += " AND R.hotelID = ";
          q += hid;
-         q += " GROUP BY (YEAR(R.repairDate)); ";
+         q += " GROUP BY EXTRACT(YEAR FROM R.repairDate) ORDER BY EXTRACT (YEAR FROM R.repairDate) DESC";
 
          esql.executeQuery2(q);
       } catch (Exception e) {
