@@ -66,14 +66,6 @@ public class DBProject {
       }//end catch
    }//end DBProject
 
-   public static boolean valiDate(String date) { 
-        String dateRegex = "^(1[0-2]|0[1-9])/(3[01]"
-                       + "|[12][0-9]|0[1-9])/[0-9]{4}$"; 
-        Pattern pattern = Pattern.compile(dateRegex); 
-        Matcher checker = pattern.matcher((CharSequence)date); 
-        return checker.matches();
-   }
-
    /**
     * Method to execute an update SQL statement.  Update SQL instructions
     * includes CREATE, INSERT, UPDATE, DELETE, and DROP.
@@ -145,23 +137,22 @@ public class DBProject {
 
    
    public static void checkEmpty(String type,String str) throws Exception {
-      if(str.length() == 0 || str == null) throw new Exception("Invalid input. " + type + " cannot be empty.");
+      if(str.length() == 0 || str == null) throw new Exception("Invalid input! " + type + " cannot be empty.");
    }
 
    public static void checkDigit(String type,String str) throws Exception {
-      if(str.matches(".*\\d.*")) throw new Exception("Invalid input. " + type + " can not have any numbers.");
+      if(str.matches(".*\\d.*")) throw new Exception("Invalid input! " + type + " can not have any numbers.");
    }
 
    public static void checkAlpha(String type,String str) throws Exception {
-      if(str.matches(".*[a-zA-Z]+.*")) throw new Exception("Invalid input. " + type + " can not have any alpha characters.");
+      if(str.matches(".*[a-zA-Z]+.*")) throw new Exception("Invalid input! " + type + " can not have any alpha characters.");
    }
 
    public static void checkDate(String type, String str) throws Exception {
-      String dateRegex = "^(1[0-2]|0[1-9])/(3[01]"
-                       + "|[12][0-9]|0[1-9])/[0-9]{4}$"; 
+      String dateRegex = "^[0-3]?[0-9]/[0-3]?[0-9]/(?:[0-9]{2})?[0-9]{2}$"; 
         Pattern pattern = Pattern.compile(dateRegex); 
         Matcher checker = pattern.matcher((CharSequence)str);
-        if(!checker.matches()) throw new Exception("Invalid input. " + type + " is not in correct date format (MM/DD/YYYY)");
+        if(!checker.matches()) throw new Exception("Invalid input! " + type + " is not in correct date format (MM/DD/YYYY)");
    }
 
      public static void checkTorF(String type,String str) throws Exception {
@@ -382,7 +373,7 @@ public class DBProject {
 
          System.out.println("Enter Maintenance Company name:");
          String name = in.readLine();
-         checkEmpty("Maintenance Company," name);
+         checkEmpty("Maintenance Company", name);
 
          System.out.println("Enter address:");
          String address = in.readLine();
@@ -586,7 +577,6 @@ public class DBProject {
    
    public static void numberOfAvailableRooms(DBProject esql){
 	  // Given a hotelID, get the count of rooms available 
-      // Your code goes here.
       try {
          System.out.println("Enter hotelID:");
          String hid = in.readLine();
@@ -600,9 +590,6 @@ public class DBProject {
          q += " );";
 
          esql.executeQuery2(q);
-         // Success Msg
-         // System.out.printf("Success. CustomerID: %s", customerID);
-
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -629,14 +616,13 @@ public class DBProject {
    
    public static void listHotelRoomBookingsForAWeek(DBProject esql){
 	  // Given a hotelID, date - list all the rooms available for a week(including the input date) 
-      // Your code goes here.
       try {
          System.out.println("Enter hotelID:");
          String hid = in.readLine();
          checkEmpty("Hotel ID", hid);
          checkAlpha("Hotel ID", hid);
 
-         System.out.println("Enter Date (in DD/MM/YY):");
+         System.out.println("Enter Date (in MM/DD/YYYY):");
          String date = in.readLine();
          checkDate("Date", date);
 
@@ -689,12 +675,18 @@ public class DBProject {
       try {
          System.out.println("Enter Customer first Name:");
          String cfn = in.readLine();
+         checkEmpty("First Name", cfn);
+         checkDigit("First Name", cfn);
          
          System.out.println("Enter Customer last Name:");
          String cln = in.readLine();
+         checkEmpty("Last Name", cln);
+         checkDigit("Last Name", cln);
 
          System.out.println("Enter number of bookings:");
          String b = in.readLine();
+         checkEmpty("No. of Bookings", b);
+         checkAlpha("No. of Bookings", b);
 
          String q = "SELECT B.price FROM Booking B, Customer C WHERE B.customer = C.customerID AND C.fname =  \'";
          q += cfn;
@@ -704,9 +696,6 @@ public class DBProject {
          q += b;
 
          esql.executeQuery2(q);
-         // Success Msg
-         // System.out.printf("Success. CustomerID: %s", customerID);
-
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -718,18 +707,27 @@ public class DBProject {
       try {
          System.out.println("Enter Hotel ID:");
          String hid = in.readLine();
+         checkEmpty("Hotel ID", hid);
+         checkAlpha("Hotel ID", hid);
          
          System.out.println("Enter Customer first Name:");
          String cfn = in.readLine();
+         checkEmpty("Customer First Name", cfn);
+         checkDigit("Customer First Name", cfn);
 
          System.out.println("Enter Customer last Name:");
          String cln = in.readLine();
+         checkEmpty("Customer Last Name", cln);
+         checkDigit("Customer Last Name", cln);
+
 
          System.out.println("Enter starting date:");
          String ds = in.readLine();
+         checkDate("Starting Date", ds);
 
          System.out.println("Enter ending date:");
          String de = in.readLine();
+         checkDate("Ending Date", de);
 
          String q = "SELECT SUM(B.price) FROM Booking B Customer C WHERE B.hotelID = \"";
          q += hid;
@@ -742,12 +740,7 @@ public class DBProject {
          q += "\" AND B.bookingDate < \"";
          q += de;
 
-         // String p = String.format("INSERT INTO ROOM (hotelID, roomNo, roomType) VALUES(%1$s,%2$s,%3$s,%4$s,%5$s,%6$s)",customerID,fname,lname,address,phNo,dob);
-
          esql.executeQuery(q);
-         // Success Msg
-         // System.out.printf("Success. CustomerID: %s", customerID);
-
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -759,11 +752,11 @@ public class DBProject {
       try {
          System.out.println("Enter Maintainance Company Name:");
          String mn = in.readLine();
+         checkEmpty("Maintainance Company",mn);
 
          String q = String.format("SELECT R.rID, R.repairType, R.hotelID, R.roomNo FROM Repair R, MaintenanceCompany M WHERE M.name = '%s' AND M.cmpID = R.mCompany", mn);
 
          esql.executeQuery2(q);
-
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -775,13 +768,12 @@ public class DBProject {
       try {
          System.out.println("Enter Number of Maintainance Companies to return:");
          String mn = in.readLine();
+         checkEmpty("Number", mn);
+         checkAlpha("Number", mn);
 
          String q = String.format("SELECT M.name, Count(M.name) FROM MaintenanceCompany M, Repair R WHERE M.cmpID = R.mCompany GROUP BY M.name ORDER BY Count(M.name) DESC Limit %s",mn);
 
          esql.executeQuery2(q);
-         // Success Msg
-         // System.out.printf("Success. CustomerID: %s", customerID);
-
       } catch (Exception e) {
          System.err.println(e.getMessage());
       }
@@ -789,9 +781,7 @@ public class DBProject {
    
    public static void numberOfRepairsForEachRoomPerYear(DBProject esql){
 	  // Given a hotelID, roomNo, get the count of repairs per year
-      // Your code goes here.
-      // ...
-      // ...
+
    }//end listRepairsMade
 
 }//end DBProject
